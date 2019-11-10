@@ -25,13 +25,13 @@ var dotseaten = 0
 var amountofdots = 0
 var scattermode = false
 var blinky = new Ghost(new Vector(12.5,14.5),'red',new Vector(levelsize.x - 3,0),() => {return pacman.pos.c()})
-var pinky = new Ghost(new Vector(13.5,14.5),'pink',new Vector(2,0),() => {return pacman.pos.c().add(pacman.dir.c().scale(4))})
-var inky = new Ghost(new Vector(14.5,14.5),'cyan',new Vector(levelsize.x - 1,levelsize.y),() => {
-    var ahead = pacman.pos.c().add(pacman.dir.c().scale(2))
-    return blinky.pos.c().add(blinky.pos.to(ahead).scale(2)) 
-})
-var clyde:Ghost = new Ghost(new Vector(15.5,14.5),'orange',new Vector(0,levelsize.y),() => {return clyde.pos.to(pacman.pos).length() > 8 ? pacman.pos.c() : clyde.fleetile})
-var ghosts = [blinky,pinky,inky,clyde]//
+// var pinky = new Ghost(new Vector(13.5,14.5),'pink',new Vector(2,0),() => {return pacman.pos.c().add(pacman.dir.c().scale(4))})
+// var inky = new Ghost(new Vector(14.5,14.5),'cyan',new Vector(levelsize.x - 1,levelsize.y),() => {
+//     var ahead = pacman.pos.c().add(pacman.dir.c().scale(2))
+//     return blinky.pos.c().add(blinky.pos.to(ahead).scale(2)) 
+// })
+// var clyde:Ghost = new Ghost(new Vector(15.5,14.5),'orange',new Vector(0,levelsize.y),() => {return clyde.pos.to(pacman.pos).length() > 8 ? pacman.pos.c() : clyde.fleetile})
+var ghosts = [blinky]//,pinky,inky,clyde
 
 var pacman = new Pacman(new Vector(6.5,15.5),new Vector(1,0))
 var board:Tiletype[][];
@@ -93,7 +93,9 @@ loadImages(['/levels/level1.png']).then(images => {
 
         //begin ghosts
         for(var ghost of ghosts){
-            if(distanceToTileCenter(ghost.pos) < 0.1){
+            var currenttravel = ghost.dir.c().scale(ghost.speed * dt)
+            var newtravel = currenttravel.c()
+            if(isGoingToCrossTileCenter(ghost.pos,currenttravel)){//if gonna cross the tile center
                 var posibillities = getMovePossibilities(floor(ghost.pos.c()))
                 var reversedir = ghost.dir.c().scale(-1).add(new Vector(1,1))
                 posibillities[dirs[reversedir.y][reversedir.x]] = false
@@ -103,9 +105,14 @@ loadImages(['/levels/level1.png']).then(images => {
                         return -ghost.pos.c().add(dirvecs[i]).to(target).length()
                 })
                 ghost.dir.overwrite(dirvecs[bestindex])
+                
+                newtravel = ghost.dir.c().scale(ghost.speed * dt)
+                var newlength = newtravel.length() - vecToTileCenter(ghost.pos).length()
+                newtravel.normalize().scale(newlength)
             }
-
-            ghost.pos.add(ghost.dir.c().scale(ghost.speed * dt))//move ghostman
+            
+            
+            ghost.pos.add(newtravel)//move ghost
             ghost.pos.map((arr,i) => arr[i] = mod(arr[i],levelsize.vals[i]))//wrap around map
             keeponrail(ghost.pos,ghost.dir)
 
@@ -152,8 +159,8 @@ function drawboard(board:Tiletype[][]){
     })
 }
 
-function distanceToTileCenter(v:Vector){
-    return v.c().sub(floor(v.c())).sub(new Vector(0.5,0.5)).length()
+function vecToTileCenter(v:Vector){
+    return v.c().sub(floor(v.c())).sub(new Vector(0.5,0.5)).scale(-1)
 }
 
 function countDots(){
@@ -172,4 +179,14 @@ function keeponrail(pos:Vector,dir:Vector){
     }else if(dir.y != 0){//when moving vertical keep x centered
         pos.x = Math.floor(pos.x) + 0.5
     }
+}
+
+function isGoingToCrossTileCenter(pos:Vector,travel:Vector){
+    var enoughlength = travel.length() >= vecToTileCenter(pos).length()
+    var rightdirection = vecToTileCenter(pos).normalize().dot(travel.c().normalize()) > 0.9
+    return enoughlength && rightdirection
+}
+
+function findbest<T>(list:T[], evaluator:(T) => number):T {
+    return list[findbestIndex(list,evaluator)]
 }
