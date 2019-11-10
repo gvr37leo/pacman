@@ -4,6 +4,8 @@
 /// <reference path="pacman.ts" />
 /// <reference path="ghost.ts" />
 /// <reference path="projectutils.ts" />
+/// <reference path="walldraw.ts" />
+
 
 //sound
 //sprites
