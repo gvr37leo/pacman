@@ -10,5 +10,12 @@ class RuleTile{
 
 }
 
+//blockcorner * 4
+//wallcorner * 4
+//edgewallcorner * 4
+//wall * 4
+//edgewall * 4
+//inner * 1
+
 
 
