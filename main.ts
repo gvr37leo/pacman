@@ -5,6 +5,16 @@
 /// <reference path="ghost.ts" />
 /// <reference path="projectutils.ts" />
 
+//sound
+//sprites
+//animations
+//wall adaptive sprites
+//score
+//scatter
+//fleeing
+//eating ghosts
+//ghosts spawning and returning to ghost house
+
 
 
 var levelsize = new Vector(28,36)
@@ -25,13 +35,13 @@ var dotseaten = 0
 var amountofdots = 0
 var scattermode = false
 var blinky = new Ghost(new Vector(12.5,14.5),'red',new Vector(levelsize.x - 3,0),() => {return pacman.pos.c()})
-// var pinky = new Ghost(new Vector(13.5,14.5),'pink',new Vector(2,0),() => {return pacman.pos.c().add(pacman.dir.c().scale(4))})
-// var inky = new Ghost(new Vector(14.5,14.5),'cyan',new Vector(levelsize.x - 1,levelsize.y),() => {
-//     var ahead = pacman.pos.c().add(pacman.dir.c().scale(2))
-//     return blinky.pos.c().add(blinky.pos.to(ahead).scale(2)) 
-// })
-// var clyde:Ghost = new Ghost(new Vector(15.5,14.5),'orange',new Vector(0,levelsize.y),() => {return clyde.pos.to(pacman.pos).length() > 8 ? pacman.pos.c() : clyde.fleetile})
-var ghosts = [blinky]//,pinky,inky,clyde
+var pinky = new Ghost(new Vector(13.5,14.5),'pink',new Vector(2,0),() => {return pacman.pos.c().add(pacman.dir.c().scale(4))})
+var inky = new Ghost(new Vector(14.5,14.5),'cyan',new Vector(levelsize.x - 1,levelsize.y),() => {
+    var ahead = pacman.pos.c().add(pacman.dir.c().scale(2))
+    return blinky.pos.c().add(blinky.pos.to(ahead).scale(2)) 
+})
+var clyde:Ghost = new Ghost(new Vector(15.5,14.5),'orange',new Vector(0,levelsize.y),() => {return clyde.pos.to(pacman.pos).length() > 8 ? pacman.pos.c() : clyde.fleetile})
+var ghosts = [blinky,pinky,inky,clyde]//
 
 var pacman = new Pacman(new Vector(6.5,15.5),new Vector(1,0))
 var board:Tiletype[][];
@@ -59,14 +69,24 @@ loadImages(['/levels/level1.png']).then(images => {
 
         //begin pacman
         var posibillities = getMovePossibilities(floor(pacman.pos.c()))
+        var olddir = pacman.dir.c()
         var dirlookup = pacman.prefferedDir.c().add(new Vector(1,1))
-        if(posibillities[dirs[dirlookup.y][dirlookup.x]]){// && distanceToTileCenter(pacman.pos) < 0.1
-            pacman.dir.overwrite(pacman.prefferedDir)
+        var olddir = pacman.dir.c()
+        if(!isCornering(olddir,pacman.prefferedDir)){
+            if(posibillities[dirs[dirlookup.y][dirlookup.x]]){
+                pacman.dir.overwrite(pacman.prefferedDir)
+            }
+        }
+
+        var travel = pacman.dir.c().scale(pacman.speed * dt)
+        if(isGoingToCrossTileCenterOrOnCenter(pacman.pos,travel)){
+            if(posibillities[dirs[dirlookup.y][dirlookup.x]]){
+                pacman.dir.overwrite(pacman.prefferedDir)
+            }
+            modifyTravelForCorners(pacman.pos,travel,olddir,pacman.prefferedDir)
         }
         
-
-        
-        pacman.pos.add(pacman.dir.c().scale(pacman.speed * dt))//move pacman
+        pacman.pos.add(travel)//move pacman
         pacman.pos.map((arr,i) => arr[i] = mod(arr[i],levelsize.vals[i]))//wrap around map
         keeponrail(pacman.pos,pacman.dir)
 
@@ -93,9 +113,8 @@ loadImages(['/levels/level1.png']).then(images => {
 
         //begin ghosts
         for(var ghost of ghosts){
-            var currenttravel = ghost.dir.c().scale(ghost.speed * dt)
-            var newtravel = currenttravel.c()
-            if(isGoingToCrossTileCenter(ghost.pos,currenttravel)){//if gonna cross the tile center
+            var travel = ghost.dir.c().scale(ghost.speed * dt)
+            if(isGoingToCrossTileCenterOrOnCenter(ghost.pos,travel)){
                 var posibillities = getMovePossibilities(floor(ghost.pos.c()))
                 var reversedir = ghost.dir.c().scale(-1).add(new Vector(1,1))
                 posibillities[dirs[reversedir.y][reversedir.x]] = false
@@ -104,15 +123,15 @@ loadImages(['/levels/level1.png']).then(images => {
                 var bestindex = findbest(posibillities.map((v,i) => i).filter(i => posibillities[i]),i => {
                         return -ghost.pos.c().add(dirvecs[i]).to(target).length()
                 })
-                ghost.dir.overwrite(dirvecs[bestindex])
-                
-                newtravel = ghost.dir.c().scale(ghost.speed * dt)
-                var newlength = newtravel.length() - vecToTileCenter(ghost.pos).length()
-                newtravel.normalize().scale(newlength)
+                var olddir = ghost.dir.c()
+                var newdir = dirvecs[bestindex]
+                ghost.dir.overwrite(newdir)
+                travel = ghost.dir.c().scale(ghost.speed * dt)
+                modifyTravelForCorners(ghost.pos,travel,olddir,newdir)
             }
             
             
-            ghost.pos.add(newtravel)//move ghost
+            ghost.pos.add(travel)//move ghost
             ghost.pos.map((arr,i) => arr[i] = mod(arr[i],levelsize.vals[i]))//wrap around map
             keeponrail(ghost.pos,ghost.dir)
 
@@ -181,7 +200,10 @@ function keeponrail(pos:Vector,dir:Vector){
     }
 }
 
-function isGoingToCrossTileCenter(pos:Vector,travel:Vector){
+function isGoingToCrossTileCenterOrOnCenter(pos:Vector,travel:Vector){
+    if(vecToTileCenter(pos).length() == 0){
+        return true
+    }
     var enoughlength = travel.length() >= vecToTileCenter(pos).length()
     var rightdirection = vecToTileCenter(pos).normalize().dot(travel.c().normalize()) > 0.9
     return enoughlength && rightdirection
@@ -189,4 +211,19 @@ function isGoingToCrossTileCenter(pos:Vector,travel:Vector){
 
 function findbest<T>(list:T[], evaluator:(T) => number):T {
     return list[findbestIndex(list,evaluator)]
+}
+
+function setMagnitude(v:Vector,length:number){
+    return v.normalize().scale(length)
+}
+
+function isCornering(olddir:Vector,newdir:Vector){
+    return Math.abs(olddir.dot(newdir)) < 0.1
+}
+
+function modifyTravelForCorners(pos:Vector,travel:Vector,olddir:Vector,newdir:Vector){
+    if(isCornering(olddir,newdir)){
+        setMagnitude(travel,travel.length() - vecToTileCenter(pos).length())
+    }
+    return travel
 }
