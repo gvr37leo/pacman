@@ -51,6 +51,9 @@ var pacman = new Pacman(new Vector(6.5,15.5),new Vector(1,0))
 var board:Tiletype[][];
 var onPacmanDead = new EventSystem<number>()
 
+var ruleTile = new RuleTile()
+
+
 document.addEventListener('keydown',e => {
     pacman.prefferedDir.x = 0
     pacman.prefferedDir.y = 0
@@ -64,9 +67,53 @@ document.addEventListener('keydown',e => {
         pacman.prefferedDir.x = 1
     }
 })
-loadImages(['/levels/level1.png']).then(images => {
-    board = convertImageData2board(convertImages2Imagedata(images)[0])
+loadImages([
+'/levels/level1.png',
+'/levels/boxcorner.png',
+'/levels/closedwall.png',
+'/levels/corner.png',
+'/levels/filled.png',
+'/levels/junction.png',
+'/levels/openwall.png',
+]).then(images => {
+    board = convertImageData2board(convertImages2Imagedata(images.slice(0,1))[0])
     ruleTile.tilegrid = createNDimArray([board.length,board[0].length],v => board[v.y][v.x] == Tiletype.wall)
+    ruleTile.rules = []
+    //0 ignore
+    //1 full
+    //2 empty
+    addrange(ruleTile.rules,createRotatedSprites(images[1],[
+        [0,2,0],
+        [2,0,1],
+        [0,1,0],
+    ]))
+    addrange(ruleTile.rules,createRotatedSprites(images[2],[
+        [0,2,0],
+        [1,0,1],
+        [0,2,0],
+    ]))
+    addrange(ruleTile.rules,createRotatedSprites(images[3],[
+        [0,2,0],
+        [2,0,1],
+        [0,1,1],
+    ]))
+    addrange(ruleTile.rules,createRotatedSprites(images[4],[
+        [0,2,0],
+        [1,0,1],
+        [0,1,1],
+    ]))
+    addrange(ruleTile.rules,createRotatedSprites(images[5],[
+        [0,1,0],
+        [1,0,1],
+        [0,2,0],
+    ]))
+    ruleTile.rules.push(new TileRule(new Sprite(images[6],0,false,false),[
+        [0,1,0],
+        [1,0,1],
+        [0,1,0],
+    ]))
+    var spritegrid = ruleTile.genSpriteGrid()
+
     amountofdots = countDots()
     loop((dt) => {
         dt /= 1000

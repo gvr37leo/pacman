@@ -82,3 +82,30 @@ function getQuadrant(pos:Vector):Direction{
         }
     }
 }
+
+function addrange<T>(a:T[],b:T[]){
+    a = a.concat(b)
+}
+
+function create2DArray<T>(size:Vector,filler:(pos:Vector) => T){
+    var result = new Array(size.y)
+    for(var i = 0; i < size.y;i++){
+        result[i] = new Array(size.x)
+    }
+    size.loop2d(v => {
+        result[v.y][v.x] = filler(v)
+    })
+    return result
+}
+
+function contains(box:Vector,point:Vector){
+    return inRange(0,box.x,point.x) && inRange(0,box.y,point.y)
+}
+
+function get2DArraySize(arr:any[][]){
+    return new Vector(arr[0].length,arr.length)
+}
+
+function index2D<T>(arr:T[][],i:Vector){
+    return arr[i.y][i.x]
+}
