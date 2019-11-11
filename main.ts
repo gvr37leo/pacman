@@ -5,6 +5,7 @@
 /// <reference path="ghost.ts" />
 /// <reference path="projectutils.ts" />
 /// <reference path="ruleTile.ts" />
+/// <reference path="ruleTile.ts" />
 
 
 //sound
@@ -45,6 +46,7 @@ var inky = new Ghost(new Vector(14.5,14.5),'cyan',new Vector(levelsize.x - 1,lev
 var clyde:Ghost = new Ghost(new Vector(15.5,14.5),'orange',new Vector(0,levelsize.y),() => {return clyde.pos.to(pacman.pos).length() > 8 ? pacman.pos.c() : clyde.fleetile})
 var ghosts = [blinky,pinky,inky,clyde]//
 
+
 var pacman = new Pacman(new Vector(6.5,15.5),new Vector(1,0))
 var board:Tiletype[][];
 var onPacmanDead = new EventSystem<number>()
@@ -64,6 +66,7 @@ document.addEventListener('keydown',e => {
 })
 loadImages(['/levels/level1.png']).then(images => {
     board = convertImageData2board(convertImages2Imagedata(images)[0])
+    ruleTile.tilegrid = createNDimArray([board.length,board[0].length],v => board[v.y][v.x] == Tiletype.wall)
     amountofdots = countDots()
     loop((dt) => {
         dt /= 1000
