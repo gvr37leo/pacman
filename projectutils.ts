@@ -109,3 +109,7 @@ function get2DArraySize(arr:any[][]){
 function index2D<T>(arr:T[][],i:Vector){
     return arr[i.y][i.x]
 }
+
+function copy2dArray<T>(arr:T[][]){
+    return create2DArray(get2DArraySize(arr),pos => index2D(arr,pos))
+}

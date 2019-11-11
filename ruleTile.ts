@@ -66,17 +66,17 @@ function createRotatedSprites(image:HTMLImageElement,grid:number[][]){
     var sprites:TileRule[] = []
 
     for(var i = 0; i < 4; i++){
-        //copy grid and rotate
-        sprites.push(new TileRule(new Sprite(image,i * 0.25,false,false),grid))
+        var rotatedcopy = rotateMatrix(copy2dArray(grid),i)
+        
+        sprites.push(new TileRule(new Sprite(image,i * 0.25,false,false),rotatedcopy))
     }
     return sprites
 }
 
 function rotateMatrix(arr:number[][],nineties:number){
-    
-    create2DArray(get2DArraySize(arr), pos => {
-        var rotatedpos = rotate2dCenter(pos.c(),nineties * 0.25, one)
-        return arr[rotatedpos.y][rotatedpos.x]
+    return create2DArray(get2DArraySize(arr), pos => {
+        var rotatedpos = rotate2dCenter(pos.c(),nineties * -0.25, one)
+        return index2D(arr,rotatedpos)
     })
 }
 
