@@ -84,7 +84,9 @@ function getQuadrant(pos:Vector):Direction{
 }
 
 function addrange<T>(a:T[],b:T[]){
-    a = a.concat(b)
+    for(var v of b){
+        a.push(v)
+    }
 }
 
 function create2DArray<T>(size:Vector,filler:(pos:Vector) => T){

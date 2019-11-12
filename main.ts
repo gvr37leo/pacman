@@ -52,7 +52,7 @@ var board:Tiletype[][];
 var onPacmanDead = new EventSystem<number>()
 
 var ruleTile = new RuleTile()
-
+var spritegrid:Sprite[][]
 
 document.addEventListener('keydown',e => {
     pacman.prefferedDir.x = 0
@@ -75,130 +75,139 @@ loadImages([
 '/levels/filled.png',
 '/levels/junction.png',
 '/levels/openwall.png',
+'/levels/boxjunction.png',
 ]).then(images => {
     board = convertImageData2board(convertImages2Imagedata(images.slice(0,1))[0])
-    ruleTile.tilegrid = createNDimArray([board.length,board[0].length],v => board[v.y][v.x] == Tiletype.wall)
+    ruleTile.tilegrid = createNDimArray([board.length,board[0].length],v => board[v.x][v.y] == Tiletype.wall)
     ruleTile.rules = []
     //0 ignore
     //1 full
     //2 empty
-    addrange(ruleTile.rules,createRotatedSprites(images[1],[
-        [0,2,0],
+
+    addrange(ruleTile.rules,createRotatedSprites(images[1],[//boxcorner
+        [2,2,2],
         [2,0,1],
-        [0,1,0],
+        [2,1,1],
     ]))
-    addrange(ruleTile.rules,createRotatedSprites(images[2],[
+    addrange(ruleTile.rules,createRotatedSprites(images[2],[//closedwall
         [0,2,0],
         [1,0,1],
         [0,2,0],
     ]))
-    addrange(ruleTile.rules,createRotatedSprites(images[3],[
-        [0,2,0],
+    addrange(ruleTile.rules,createRotatedSprites(images[3],[//wallcorner
+        [2,2,2],
         [2,0,1],
-        [0,1,1],
+        [2,1,2],
     ]))
-    addrange(ruleTile.rules,createRotatedSprites(images[4],[
+    ruleTile.rules.push(new TileRule(new Sprite(images[4],0,false,false),[//filled
+        [1,1,1],
+        [1,0,1],
+        [1,1,1],
+    ]))
+    addrange(ruleTile.rules,createRotatedSprites(images[5],[//junction
+        [2,2,2],
+        [1,0,1],
+        [2,1,1],
+    ]))
+    addrange(ruleTile.rules,createRotatedSprites(images[6],[//openwall/boxwall
+        [1,1,1],
+        [1,0,1],
         [0,2,0],
-        [1,0,1],
-        [0,1,1],
     ]))
-    addrange(ruleTile.rules,createRotatedSprites(images[5],[
-        [0,1,0],
+    addrange(ruleTile.rules,createRotatedSprites(images[7],[//openjunction
+        [1,1,1],
         [1,0,1],
-        [0,2,0],
+        [2,1,1],
     ]))
-    ruleTile.rules.push(new TileRule(new Sprite(images[6],0,false,false),[
-        [0,1,0],
-        [1,0,1],
-        [0,1,0],
-    ]))
-    var spritegrid = ruleTile.genSpriteGrid()
+
+    spritegrid = ruleTile.genSpriteGrid()
 
     amountofdots = countDots()
-    loop((dt) => {
-        dt /= 1000
-        dt = clamp(dt,0,1/100)
+    drawboard(board)
+    // loop((dt) => {
+    //     dt /= 1000
+    //     dt = clamp(dt,0,1/100)
 
-        //begin pacman
-        var posibillities = getMovePossibilities(floor(pacman.pos.c()))
-        var olddir = pacman.dir.c()
-        var dirlookup = pacman.prefferedDir.c().add(new Vector(1,1))
-        var olddir = pacman.dir.c()
-        if(!isCornering(olddir,pacman.prefferedDir)){
-            if(posibillities[dirs[dirlookup.y][dirlookup.x]]){
-                pacman.dir.overwrite(pacman.prefferedDir)
-            }
-        }
+    //     //begin pacman
+    //     var posibillities = getMovePossibilities(floor(pacman.pos.c()))
+    //     var olddir = pacman.dir.c()
+    //     var dirlookup = pacman.prefferedDir.c().add(new Vector(1,1))
+    //     var olddir = pacman.dir.c()
+    //     if(!isCornering(olddir,pacman.prefferedDir)){
+    //         if(posibillities[dirs[dirlookup.y][dirlookup.x]]){
+    //             pacman.dir.overwrite(pacman.prefferedDir)
+    //         }
+    //     }
 
-        var travel = pacman.dir.c().scale(pacman.speed * dt)
-        if(isGoingToCrossTileCenterOrOnCenter(pacman.pos,travel)){
-            if(posibillities[dirs[dirlookup.y][dirlookup.x]]){
-                pacman.dir.overwrite(pacman.prefferedDir)
-            }
-            modifyTravelForCorners(pacman.pos,travel,olddir,pacman.prefferedDir)
-        }
+    //     var travel = pacman.dir.c().scale(pacman.speed * dt)
+    //     if(isGoingToCrossTileCenterOrOnCenter(pacman.pos,travel)){
+    //         if(posibillities[dirs[dirlookup.y][dirlookup.x]]){
+    //             pacman.dir.overwrite(pacman.prefferedDir)
+    //         }
+    //         modifyTravelForCorners(pacman.pos,travel,olddir,pacman.prefferedDir)
+    //     }
         
-        pacman.pos.add(travel)//move pacman
-        pacman.pos.map((arr,i) => arr[i] = mod(arr[i],levelsize.vals[i]))//wrap around map
-        keeponrail(pacman.pos,pacman.dir)
+    //     pacman.pos.add(travel)//move pacman
+    //     pacman.pos.map((arr,i) => arr[i] = mod(arr[i],levelsize.vals[i]))//wrap around map
+    //     keeponrail(pacman.pos,pacman.dir)
 
-        for(var i = 0; i < 4;i++){//bump into walls
-            if(arrayequal(dirvecs[i].vals,pacman.dir.vals) && getQuadrant(pacman.pos) == i && posibillities[i] == false){
-                pacman.pos.vals[(i + 1) % 2] = Math.floor(pacman.pos.vals[(i + 1) % 2]) + 0.5
-            }    
-        }
+    //     for(var i = 0; i < 4;i++){//bump into walls
+    //         if(arrayequal(dirvecs[i].vals,pacman.dir.vals) && getQuadrant(pacman.pos) == i && posibillities[i] == false){
+    //             pacman.pos.vals[(i + 1) % 2] = Math.floor(pacman.pos.vals[(i + 1) % 2]) + 0.5
+    //         }    
+    //     }
 
-        var pacmanroundpos = floor(pacman.pos.c())
-        var currenttile = board[pacmanroundpos.y][pacmanroundpos.x]
+    //     var pacmanroundpos = floor(pacman.pos.c())
+    //     var currenttile = board[pacmanroundpos.y][pacmanroundpos.x]
 
-        if(currenttile == Tiletype.dot){
-            board[pacmanroundpos.y][pacmanroundpos.x] = Tiletype.blank
-            score += 10
-        }else if(currenttile == Tiletype.fruit){
-            board[pacmanroundpos.y][pacmanroundpos.x] = Tiletype.blank
-        }else if(currenttile == Tiletype.powerup){
-            board[pacmanroundpos.y][pacmanroundpos.x] = Tiletype.blank
-            score += 50
-        }
-        //end pacman
+    //     if(currenttile == Tiletype.dot){
+    //         board[pacmanroundpos.y][pacmanroundpos.x] = Tiletype.blank
+    //         score += 10
+    //     }else if(currenttile == Tiletype.fruit){
+    //         board[pacmanroundpos.y][pacmanroundpos.x] = Tiletype.blank
+    //     }else if(currenttile == Tiletype.powerup){
+    //         board[pacmanroundpos.y][pacmanroundpos.x] = Tiletype.blank
+    //         score += 50
+    //     }
+    //     //end pacman
 
 
-        //begin ghosts
-        for(var ghost of ghosts){
-            var travel = ghost.dir.c().scale(ghost.speed * dt)
-            if(isGoingToCrossTileCenterOrOnCenter(ghost.pos,travel)){
-                var posibillities = getMovePossibilities(floor(ghost.pos.c()))
-                var reversedir = ghost.dir.c().scale(-1).add(new Vector(1,1))
-                posibillities[dirs[reversedir.y][reversedir.x]] = false
-                var target = ghost.getTarget()
+    //     //begin ghosts
+    //     for(var ghost of ghosts){
+    //         var travel = ghost.dir.c().scale(ghost.speed * dt)
+    //         if(isGoingToCrossTileCenterOrOnCenter(ghost.pos,travel)){
+    //             var posibillities = getMovePossibilities(floor(ghost.pos.c()))
+    //             var reversedir = ghost.dir.c().scale(-1).add(new Vector(1,1))
+    //             posibillities[dirs[reversedir.y][reversedir.x]] = false
+    //             var target = ghost.getTarget()
                 
-                var bestindex = findbest(posibillities.map((v,i) => i).filter(i => posibillities[i]),i => {
-                        return -ghost.pos.c().add(dirvecs[i]).to(target).length()
-                })
-                var olddir = ghost.dir.c()
-                var newdir = dirvecs[bestindex]
-                ghost.dir.overwrite(newdir)
-                travel = ghost.dir.c().scale(ghost.speed * dt)
-                modifyTravelForCorners(ghost.pos,travel,olddir,newdir)
-            }
+    //             var bestindex = findbest(posibillities.map((v,i) => i).filter(i => posibillities[i]),i => {
+    //                     return -ghost.pos.c().add(dirvecs[i]).to(target).length()
+    //             })
+    //             var olddir = ghost.dir.c()
+    //             var newdir = dirvecs[bestindex]
+    //             ghost.dir.overwrite(newdir)
+    //             travel = ghost.dir.c().scale(ghost.speed * dt)
+    //             modifyTravelForCorners(ghost.pos,travel,olddir,newdir)
+    //         }
             
             
-            ghost.pos.add(travel)//move ghost
-            ghost.pos.map((arr,i) => arr[i] = mod(arr[i],levelsize.vals[i]))//wrap around map
-            keeponrail(ghost.pos,ghost.dir)
+    //         ghost.pos.add(travel)//move ghost
+    //         ghost.pos.map((arr,i) => arr[i] = mod(arr[i],levelsize.vals[i]))//wrap around map
+    //         keeponrail(ghost.pos,ghost.dir)
 
-            if(vectorequal(round(ghost.pos.c()),pacmanroundpos)){
-                onPacmanDead.trigger(0)
-            }
-        }
-        //end ghosts
+    //         if(vectorequal(round(ghost.pos.c()),pacmanroundpos)){
+    //             onPacmanDead.trigger(0)
+    //         }
+    //     }
+    //     //end ghosts
 
 
-        ctxt.clearRect(0,0,screensize.x,screensize.y)
-        drawboard(board)
-        pacman.draw()
-        ghosts.forEach(g => g.draw())
-    })
+    //     ctxt.clearRect(0,0,screensize.x,screensize.y)
+    //     // pacman.draw()
+    //     // ghosts.forEach(g => g.draw())
+    //     drawboard(board)    
+    // })
 })
 
 enum Direction{north,east,south,west}
@@ -224,9 +233,10 @@ function getMovePossibilities(pos:Vector){
 
 function drawboard(board:Tiletype[][]){
     levelsize.loop2d(v => {
-        var tiletype = board[v.y][v.x]
-        ctxt.fillStyle = colors[tiletype]
-        fillrect(v)
+        var sprite = index2D(spritegrid,v)
+        if(sprite){
+            sprite.draw(v.c().mul(tilesize))
+        }
     })
 }
 

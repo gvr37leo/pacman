@@ -1,10 +1,20 @@
 class Sprite{
     constructor(
         public image:HTMLImageElement,
-        public rotation:number,
+        public rotations:number,
         public xflipped:boolean,
         public yflipped:boolean,){
 
+    }
+
+    draw(pos:Vector){
+        var center = pos.c().add(tilesize.c().scale(0.5))
+        ctxt.save()
+        ctxt.translate(center.x,center.y)
+        ctxt.rotate(this.rotations * TAU)
+        ctxt.translate(-center.x,-center.y)
+        ctxt.drawImage(this.image,pos.x,pos.y,tilesize.x,tilesize.y)
+        ctxt.restore()
     }
 }
 
@@ -22,16 +32,24 @@ class RuleTile{
     rules:TileRule[] = []
 
     genSpriteGrid():Sprite[][]{
-        var result = create2DArray(get2DArraySize(this.tilegrid),pos => this.rules.find(r => this.positionPassesRule(pos,r)).sprite)
+        var result = create2DArray(get2DArraySize(this.tilegrid),pos => {
+            if(index2D(this.tilegrid,pos) == false){
+                return null
+            }else{
+                var rule = this.rules.find(r => this.positionPassesRule(pos,r))
+                if(rule == null)return null
+                else return rule.sprite
+            }
+        })
         return result
     }
 
     positionPassesRule(pos:Vector,tilerule:TileRule){
         var result = true
         new Vector(3,3).loop2d(v => {
-            var relpos = v.c().sub(new Vector(-1,-1))
+            var relpos = v.c().add(new Vector(-1,-1))
             var abspos = pos.c().add(relpos)
-            var requirement = index2D(tilerule.grid,relpos)
+            var requirement = index2D(tilerule.grid,v)
             if(requirement == 0){
                 return
             }else {
@@ -75,7 +93,7 @@ function createRotatedSprites(image:HTMLImageElement,grid:number[][]){
 
 function rotateMatrix(arr:number[][],nineties:number){
     return create2DArray(get2DArraySize(arr), pos => {
-        var rotatedpos = rotate2dCenter(pos.c(),nineties * -0.25, one)
+        var rotatedpos = round(rotate2dCenter(pos.c(),nineties * -0.25, one))
         return index2D(arr,rotatedpos)
     })
 }
