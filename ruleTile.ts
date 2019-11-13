@@ -28,12 +28,12 @@ class TileRule{
 }
 
 class RuleTile{
-    tilegrid:boolean[][]
+    tilegrid:number[][]
     rules:TileRule[] = []
 
     genSpriteGrid():Sprite[][]{
         var result = create2DArray(get2DArraySize(this.tilegrid),pos => {
-            if(index2D(this.tilegrid,pos) == false){
+            if(index2D(this.tilegrid,pos) != Tiletype.wall){
                 return null
             }else{
                 var rule = this.rules.find(r => this.positionPassesRule(pos,r))
@@ -55,7 +55,7 @@ class RuleTile{
             }else {
                 var isoccupied = false;
                 if(contains(get2DArraySize(this.tilegrid).sub(one),abspos)){
-                    isoccupied = index2D(this.tilegrid,abspos)
+                    isoccupied = index2D(this.tilegrid,abspos) == 1
                 }
                 var matchingrequirement = (requirement == 1 && isoccupied) || (requirement == 2 && isoccupied == false)
 

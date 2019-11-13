@@ -28,9 +28,9 @@ var canvas = crret.canvas
 var ctxt = crret.ctxt
 
 
-var colors = ['black','white','blue','red','yellow']
-var colorsrgb = [[0,0,0],[255,255,255],[0,38,255],[255,0,0],[255,216,0]]
-enum Tiletype{wall,blank,powerup,fruit,dot}
+var colors = ['black','white','blue','red','yellow','pink']
+var colorsrgb = [[0,0,0],[255,255,255],[0,38,255],[255,0,0],[255,216,0],[255, 61, 229]]
+enum Tiletype{wall,blank,powerup,fruit,dot,highround}
 
 var score = 0
 var highscore = 0
@@ -78,7 +78,17 @@ loadImages([
 '/levels/boxjunction.png',
 ]).then(images => {
     board = convertImageData2board(convertImages2Imagedata(images.slice(0,1))[0])
-    ruleTile.tilegrid = createNDimArray([board.length,board[0].length],v => board[v.x][v.y] == Tiletype.wall)
+    ruleTile.tilegrid = createNDimArray([board.length,board[0].length],v => {
+        switch (board[v.x][v.y]) {
+            case Tiletype.wall:
+                return 1
+            case Tiletype.highround:
+                return 2
+            default:
+                return 0;
+        }
+
+    })
     ruleTile.rules = []
     //0 ignore
     //1 full
