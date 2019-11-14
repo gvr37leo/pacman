@@ -51,7 +51,7 @@ var pacman = new Pacman(new Vector(6.5,15.5),new Vector(1,0))
 var board:Tiletype[][];
 var onPacmanDead = new EventSystem<number>()
 
-var ruleTile = new RuleTile()
+var ruleTile = new RuleTile(1,-1,-2,2,0)
 var spritegrid:Sprite[][]
 
 document.addEventListener('keydown',e => {
@@ -90,45 +90,46 @@ loadImages([
 
     })
     ruleTile.rules = []
-    //0 ignore
-    //1 full
-    //2 empty
+    //-1 ignore
+    //-2 empty
+    //1 wallnumber
+    //2 highground
 
-    addrange(ruleTile.rules,createRotatedSprites(images[1],[//boxcorner
-        [2,2,2],
-        [2,0,1],
-        [2,1,1],
-    ]))
+    // addrange(ruleTile.rules,createRotatedSprites(images[ 1],[//boxcorner
+    //     [-2,-2,-2],
+    //     [-2,-1, 1],
+    //     [-2, 1, 1],
+    // ]))
     addrange(ruleTile.rules,createRotatedSprites(images[2],[//closedwall
-        [0,2,0],
-        [1,0,1],
-        [0,2,0],
+        [-1, 2,-1],
+        [ 1,-1, 1],
+        [-1,-1,-1],
     ]))
     addrange(ruleTile.rules,createRotatedSprites(images[3],[//wallcorner
-        [2,2,2],
-        [2,0,1],
-        [2,1,2],
+        [ 2, 2, 2],
+        [ 2,-1, 1],
+        [ 2, 1,-2],
     ]))
-    ruleTile.rules.push(new TileRule(new Sprite(images[4],0,false,false),[//filled
-        [1,1,1],
-        [1,0,1],
-        [1,1,1],
-    ]))
-    addrange(ruleTile.rules,createRotatedSprites(images[5],[//junction
-        [2,2,2],
-        [1,0,1],
-        [2,1,1],
-    ]))
-    addrange(ruleTile.rules,createRotatedSprites(images[6],[//openwall/boxwall
-        [1,1,1],
-        [1,0,1],
-        [0,2,0],
-    ]))
-    addrange(ruleTile.rules,createRotatedSprites(images[7],[//openjunction
-        [1,1,1],
-        [1,0,1],
-        [2,1,1],
-    ]))
+    // ruleTile.rules.push(new RuleTileRule(new Sprite(images[4],-1,false,false),[//filled
+    //     [ 1, 1, 1],
+    //     [ 1,-1, 1],
+    //     [ 1, 1, 1],
+    // ]))
+    // addrange(ruleTile.rules,createRotatedSprites(images[5],[//junction
+    //     [-2,-2,-2],
+    //     [ 1,-1, 1],
+    //     [-2, 1, 1],
+    // ]))
+    // addrange(ruleTile.rules,createRotatedSprites(images[6],[//openwall/boxwall
+    //     [ 1, 1, 1],
+    //     [ 1,-1, 1],
+    //     [-1,-2,-1],
+    // ]))
+    // addrange(ruleTile.rules,createRotatedSprites(images[7],[//openjunction
+    //     [ 1, 1, 1],
+    //     [ 1,-1, 1],
+    //     [-2, 1, 1],
+    // ]))
 
     spritegrid = ruleTile.genSpriteGrid()
 

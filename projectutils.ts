@@ -100,7 +100,7 @@ function create2DArray<T>(size:Vector,filler:(pos:Vector) => T){
     return result
 }
 
-function contains(box:Vector,point:Vector){
+function boxcontain(box:Vector,point:Vector){
     return inRange(0,box.x,point.x) && inRange(0,box.y,point.y)
 }
 

@@ -19,7 +19,7 @@ class Sprite{
 }
 
 // https://www.youtube.com/watch?v=Ky0sV9pua-E
-class TileRule{
+class RuleTileRule{
     constructor(
         public sprite:Sprite,
         public grid:number[][],){
@@ -29,11 +29,15 @@ class TileRule{
 
 class RuleTile{
     tilegrid:number[][]
-    rules:TileRule[] = []
+    rules:RuleTileRule[] = []
+
+    constructor(public wallnumber,public ignorenumber,public emptynumber,public voidnumber,public unfilledtilenumber){
+
+    }
 
     genSpriteGrid():Sprite[][]{
         var result = create2DArray(get2DArraySize(this.tilegrid),pos => {
-            if(index2D(this.tilegrid,pos) != Tiletype.wall){
+            if(index2D(this.tilegrid,pos) != this.wallnumber){
                 return null
             }else{
                 var rule = this.rules.find(r => this.positionPassesRule(pos,r))
@@ -44,30 +48,44 @@ class RuleTile{
         return result
     }
 
-    positionPassesRule(pos:Vector,tilerule:TileRule){
+    positionPassesRule(pos:Vector,ruleTileRule:RuleTileRule){
         var result = true
         new Vector(3,3).loop2d(v => {
             var relpos = v.c().add(new Vector(-1,-1))
             var abspos = pos.c().add(relpos)
-            var requirement = index2D(tilerule.grid,v)
-            if(requirement == 0){
-                return
-            }else {
-                var isoccupied = false;
-                if(contains(get2DArraySize(this.tilegrid).sub(one),abspos)){
-                    isoccupied = index2D(this.tilegrid,abspos) == 1
-                }
-                var matchingrequirement = (requirement == 1 && isoccupied) || (requirement == 2 && isoccupied == false)
+            var requirement = index2D(ruleTileRule.grid,v)
+            //-1 other
+            //-2 empty
+            //1 wall
+            //2 highground
 
-                if(matchingrequirement){
+            var tiletype = this.voidnumber
+            if(boxcontain(get2DArraySize(this.tilegrid).sub(one),abspos)){
+                tiletype = index2D(this.tilegrid,abspos)
+            }
+
+            if(requirement == -1){
+                return//continue
+            }
+            else if(requirement == -2){
+                if(tiletype == this.unfilledtilenumber){
                     return
                 }else{
-                    result = false
-                    v.y = 3
-                    v.x = 3
-                    return
+                    //goto end and break
+                }
+            }else if(requirement == -1){
+                return//continue
+            }else{//requirement >= 0
+                if(tiletype == requirement){
+                    return//continue
+                }else{
+                    //goto end and break
                 }
             }
+            result = false
+            v.y = 3
+            v.x = 3
+            return
         })
         return result
     }
@@ -81,12 +99,12 @@ class RuleTile{
 //inner * 1
 var images:HTMLImageElement[] = []
 function createRotatedSprites(image:HTMLImageElement,grid:number[][]){
-    var sprites:TileRule[] = []
+    var sprites:RuleTileRule[] = []
 
     for(var i = 0; i < 4; i++){
         var rotatedcopy = rotateMatrix(copy2dArray(grid),i)
         
-        sprites.push(new TileRule(new Sprite(image,i * 0.25,false,false),rotatedcopy))
+        sprites.push(new RuleTileRule(new Sprite(image,i * 0.25,false,false),rotatedcopy))
     }
     return sprites
 }
