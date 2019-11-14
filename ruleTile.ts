@@ -12,12 +12,19 @@ class Sprite{
         ctxt.save()
         var xflip = this.xflipped ? -1 : 1
         var yflip = this.yflipped ? -1 : 1
+        
+        
+        
+        // ctxt.scale(xflip,yflip)
+        // ctxt.rotate(this.rotations * TAU)
+        // ctxt.scale(xflip,yflip)
         ctxt.translate(center.x,center.y)
         ctxt.rotate(this.rotations * TAU)
-        ctxt.translate(-center.x,-center.y)
         ctxt.scale(xflip,yflip)
+        ctxt.translate(-center.x,-center.y)
         
-        ctxt.drawImage(this.image,pos.x * xflip,pos.y * yflip,tilesize.x,tilesize.y)
+        
+        ctxt.drawImage(this.image,pos.x ,pos.y,tilesize.x,tilesize.y)
         ctxt.restore()
     }
 }

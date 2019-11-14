@@ -21,12 +21,12 @@
 
 
 var levelsize = new Vector(28,36)
-var tilesize =  new Vector(20,20)
+var tilesize =  new Vector(16,16)
 var screensize = levelsize.c().mul(tilesize)
 var crret = createCanvas(screensize.x,screensize.y)
 var canvas = crret.canvas
 var ctxt = crret.ctxt
-
+ctxt.imageSmoothingEnabled = false
 
 var colors = ['black','white','blue','red','yellow','pink']
 var colorsrgb = [[0,0,0],[255,255,255],[0,38,255],[255,0,0],[255,216,0],[255, 61, 229]]
@@ -87,7 +87,7 @@ loadImages([
             default:
                 return 0;
         }
-
+        
     })
     ruleTile.rules = []
     //-1 ignore
@@ -95,26 +95,26 @@ loadImages([
     //1 wallnumber
     //2 highground
 
-    // addrange(ruleTile.rules,createRotatedSprites(images[ 1],[//boxcorner
-    //     [-2,-2,-2],
-    //     [-2,-1, 1],
-    //     [-2, 1, 1],
-    // ]))
-    // addrange(ruleTile.rules,createRotatedSprites(images[2],[//closedwall
-    //     [-1, 2,-1],
-    //     [ 1,-1, 1],
-    //     [-1,-2,-1],
-    // ]))
-    // addrange(ruleTile.rules,createRotatedSprites(images[3],[//wallcorner
-    //     [ 2, 2, 2],
-    //     [ 2,-1, 1],
-    //     [ 2, 1,-2],
-    // ]))
-    // ruleTile.rules.push(new RuleTileRule(new Sprite(images[4],-1,false,false),[//filled
-    //     [ 1, 1, 1],
-    //     [ 1,-1, 1],
-    //     [ 1, 1, 1],
-    // ]))
+    addrange(ruleTile.rules,createRotatedSprites(images[ 1],[//boxcorner
+        [-1,-1,-1],
+        [-1,-1, 1],
+        [-1, 1,-1],
+    ]))
+    addrange(ruleTile.rules,createRotatedSprites(images[2],[//closedwall
+        [-1, 2,-1],
+        [ 1,-1, 1],
+        [-1,-2,-1],
+    ]))
+    addrange(ruleTile.rules,createRotatedSprites(images[3],[//wallcorner
+        [ 2, 2, 2],
+        [ 2,-1, 1],
+        [ 2, 1,-2],
+    ]))
+    ruleTile.rules.push(new RuleTileRule(new Sprite(images[4],-1,false,false),[//filled
+        [ 1, 1, 1],
+        [ 1,-1, 1],
+        [ 1, 1, 1],
+    ]))
     addrange(ruleTile.rules,createRotatedSprites(images[5],[//closedjunction
         [ 2, 2, 2],
         [ 1,-1, 1],
@@ -124,12 +124,12 @@ loadImages([
         [ 2, 2, 2],
         [ 1,-1, 1],
         [ 1, 1,-2],
-    ],false,true))
-    // addrange(ruleTile.rules,createRotatedSprites(images[6],[//openwall/boxwall
-    //     [ 1, 1, 1],
-    //     [ 1,-1, 1],
-    //     [-1,-2,-1],
-    // ]))
+    ],true,false))
+    addrange(ruleTile.rules,createRotatedSprites(images[6],[//openwall/boxwall
+        [ 1, 1, 1],
+        [ 1,-1, 1],
+        [-1,-2,-1],
+    ]))
     // addrange(ruleTile.rules,createRotatedSprites(images[7],[//openjunction
     //     [ 1, 1, 1],
     //     [ 1,-1, 1],
@@ -140,6 +140,8 @@ loadImages([
 
     amountofdots = countDots()
     drawboard(board)
+
+
     // loop((dt) => {
     //     dt /= 1000
     //     dt = clamp(dt,0,1/100)
