@@ -115,3 +115,8 @@ function index2D<T>(arr:T[][],i:Vector){
 function copy2dArray<T>(arr:T[][]){
     return create2DArray(get2DArraySize(arr),pos => index2D(arr,pos))
 }
+
+var up = new Vector(0,-1)
+var right = new Vector(1,0)
+var down = new Vector(0,1)
+var left = new Vector(-1,0)
