@@ -10,9 +10,16 @@ class Sprite{
     draw(pos:Vector){
         var center = pos.c().add(tilesize.c().scale(0.5))
         ctxt.save()
+        if(this.yflipped){
+            ctxt.scale(1,-1)
+        }
+        if(this.xflipped){
+            ctxt.scale(-1,1)
+        }
         ctxt.translate(center.x,center.y)
         ctxt.rotate(this.rotations * TAU)
         ctxt.translate(-center.x,-center.y)
+        
         ctxt.drawImage(this.image,pos.x,pos.y,tilesize.x,tilesize.y)
         ctxt.restore()
     }
@@ -98,13 +105,13 @@ class RuleTile{
 //edgewall * 4
 //inner * 1
 var images:HTMLImageElement[] = []
-function createRotatedSprites(image:HTMLImageElement,grid:number[][]){
+function createRotatedSprites(image:HTMLImageElement,grid:number[][],xflipped = false, yflipped = false){
     var sprites:RuleTileRule[] = []
 
     for(var i = 0; i < 4; i++){
         var rotatedcopy = rotateMatrix(copy2dArray(grid),i)
         
-        sprites.push(new RuleTileRule(new Sprite(image,i * 0.25,false,false),rotatedcopy))
+        sprites.push(new RuleTileRule(new Sprite(image,i * 0.25,xflipped,yflipped),rotatedcopy))
     }
     return sprites
 }

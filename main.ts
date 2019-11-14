@@ -100,26 +100,31 @@ loadImages([
     //     [-2,-1, 1],
     //     [-2, 1, 1],
     // ]))
-    addrange(ruleTile.rules,createRotatedSprites(images[2],[//closedwall
-        [-1, 2,-1],
-        [ 1,-1, 1],
-        [-1,-1,-1],
-    ]))
-    addrange(ruleTile.rules,createRotatedSprites(images[3],[//wallcorner
-        [ 2, 2, 2],
-        [ 2,-1, 1],
-        [ 2, 1,-2],
-    ]))
+    // addrange(ruleTile.rules,createRotatedSprites(images[2],[//closedwall
+    //     [-1, 2,-1],
+    //     [ 1,-1, 1],
+    //     [-1,-2,-1],
+    // ]))
+    // addrange(ruleTile.rules,createRotatedSprites(images[3],[//wallcorner
+    //     [ 2, 2, 2],
+    //     [ 2,-1, 1],
+    //     [ 2, 1,-2],
+    // ]))
     // ruleTile.rules.push(new RuleTileRule(new Sprite(images[4],-1,false,false),[//filled
     //     [ 1, 1, 1],
     //     [ 1,-1, 1],
     //     [ 1, 1, 1],
     // ]))
-    // addrange(ruleTile.rules,createRotatedSprites(images[5],[//junction
-    //     [-2,-2,-2],
-    //     [ 1,-1, 1],
-    //     [-2, 1, 1],
-    // ]))
+    addrange(ruleTile.rules,createRotatedSprites(images[5],[//closedjunction
+        [ 2, 2, 2],
+        [ 1,-1, 1],
+        [-2, 1, 1],
+    ]))
+    addrange(ruleTile.rules,createRotatedSprites(images[5],[//closedjunction
+        [ 2, 2, 2],
+        [ 1,-1, 1],
+        [ 1, 1,-2],
+    ],false,true))
     // addrange(ruleTile.rules,createRotatedSprites(images[6],[//openwall/boxwall
     //     [ 1, 1, 1],
     //     [ 1,-1, 1],
