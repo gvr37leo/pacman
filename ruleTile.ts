@@ -10,17 +10,14 @@ class Sprite{
     draw(pos:Vector){
         var center = pos.c().add(tilesize.c().scale(0.5))
         ctxt.save()
-        if(this.yflipped){
-            ctxt.scale(1,-1)
-        }
-        if(this.xflipped){
-            ctxt.scale(-1,1)
-        }
+        var xflip = this.xflipped ? -1 : 1
+        var yflip = this.yflipped ? -1 : 1
         ctxt.translate(center.x,center.y)
         ctxt.rotate(this.rotations * TAU)
         ctxt.translate(-center.x,-center.y)
+        ctxt.scale(xflip,yflip)
         
-        ctxt.drawImage(this.image,pos.x,pos.y,tilesize.x,tilesize.y)
+        ctxt.drawImage(this.image,pos.x * xflip,pos.y * yflip,tilesize.x,tilesize.y)
         ctxt.restore()
     }
 }
