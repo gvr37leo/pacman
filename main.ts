@@ -43,7 +43,7 @@ var inky = new Ghost(new Vector(14.5,14.5),'cyan',new Vector(levelsize.x - 1,lev
     var ahead = pacman.pos.c().add(pacman.dir.c().scale(2))
     return blinky.pos.c().add(blinky.pos.to(ahead).scale(2)) 
 })
-var clyde:Ghost = new Ghost(new Vector(15.5,14.5),'orange',new Vector(0,levelsize.y),() => {return clyde.pos.to(pacman.pos).length() > 8 ? pacman.pos.c() : clyde.fleetile})
+var clyde:Ghost = new Ghost(new Vector(15.5,14.5),'orange',new Vector(0,levelsize.y),() => {return clyde.pos.to(pacman.pos).length() > 8 ? pacman.pos.c() : clyde.scattertile})
 var ghosts = [blinky,pinky,inky,clyde]//
 
 
@@ -157,9 +157,24 @@ loadImages([
 
     amountofdots = countDots()
     drawboard(board)
+ 
+    scattermodedelayon()
 
+    function scattermodedelayon(){
+        setTimeout(() => {
+            scattermode = true
+            scattermodedelayoff()
+        },12000)
+    }
 
-    loop((dt) => {
+    function scattermodedelayoff(){
+        setTimeout(() => {
+            scattermode = false
+            scattermodedelayon()
+        },5000)
+    }
+    
+    var loopfunc = (dt) => {
         dt /= 1000
         dt = clamp(dt,0,1/100)
 
@@ -200,8 +215,13 @@ loadImages([
             score += 10
         }else if(currenttile == Tiletype.fruit){
             board[pacmanroundpos.y][pacmanroundpos.x] = Tiletype.blank
+            score += 100
         }else if(currenttile == Tiletype.powerup){
             board[pacmanroundpos.y][pacmanroundpos.x] = Tiletype.blank
+            ghosts.forEach(g => g.fleeing = true)
+            setTimeout(() => {
+                ghosts.forEach(g => g.fleeing = false)
+            },12000)
             score += 50
         }
         //end pacman
@@ -242,7 +262,9 @@ loadImages([
         pacman.draw()
         ghosts.forEach(g => g.draw())
         drawboard(board)    
-    })
+    }
+
+    // loop(loopfunc)
 })
 
 enum Direction{north,east,south,west}
