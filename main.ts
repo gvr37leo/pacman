@@ -6,6 +6,7 @@
 /// <reference path="projectutils.ts" />
 /// <reference path="ruleTile.ts" />
 /// <reference path="ruleTile.ts" />
+/// <reference path="atlas.ts" />
 
 
 //sound
@@ -68,15 +69,18 @@ document.addEventListener('keydown',e => {
     }
 })
 loadImages([
-'/levels/level1.png',
+'/levels/level1.png',//0
 '/levels/boxcorner.png',
 '/levels/closedwall.png',
 '/levels/corner.png',
 '/levels/filled.png',
-'/levels/junction.png',
+'/levels/junction.png',//5
 '/levels/openwall.png',
 '/levels/boxjunction.png',
 '/levels/innerboxcorner.png',
+'/levels/ghostwallcorner.png',//9
+'/levels/ghostwallend.png',
+'/levels/ghostdoor.png',
 ]).then(images => {
     board = convertImageData2board(convertImages2Imagedata(images.slice(0,1))[0])
     ruleTile.tilegrid = createNDimArray([board.length,board[0].length],v => {
@@ -153,7 +157,11 @@ loadImages([
     ]))
 
     spritegrid = ruleTile.genSpriteGrid()
-    spriteBox(new Sprite(images[2],0.5,false,false),new Sprite(images[1],0,false,false),new Vector(10,15),new Vector(7,4))
+    spriteBox(new Sprite(images[2],0.5,false,false),new Sprite(images[9],0,false,false),new Vector(10,15),new Vector(7,4))
+    spritegrid[15][13] = new Sprite(images[11],0)
+    spritegrid[15][14] = new Sprite(images[11],0)
+    spritegrid[15][12] = new Sprite(images[10],0,true)
+    spritegrid[15][15] = new Sprite(images[10],0)
 
     amountofdots = countDots()
     drawboard(board)
@@ -218,9 +226,9 @@ loadImages([
             score += 100
         }else if(currenttile == Tiletype.powerup){
             board[pacmanroundpos.y][pacmanroundpos.x] = Tiletype.blank
-            ghosts.forEach(g => g.fleeing = true)
+            ghosts.forEach(g => g.isFleeing = true)
             setTimeout(() => {
-                ghosts.forEach(g => g.fleeing = false)
+                ghosts.forEach(g => g.isFleeing = false)
             },12000)
             score += 50
         }
@@ -257,14 +265,13 @@ loadImages([
         }
         //end ghosts
 
-
         ctxt.clearRect(0,0,screensize.x,screensize.y)
+        drawboard(board)    
         pacman.draw()
         ghosts.forEach(g => g.draw())
-        drawboard(board)    
     }
 
-    // loop(loopfunc)
+    loop(loopfunc)
 })
 
 enum Direction{north,east,south,west}

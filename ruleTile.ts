@@ -2,8 +2,8 @@ class Sprite{
     constructor(
         public image:HTMLImageElement,
         public rotations:number,
-        public xflipped:boolean,
-        public yflipped:boolean,){
+        public xflipped:boolean = false,
+        public yflipped:boolean = false,){
 
     }
 
