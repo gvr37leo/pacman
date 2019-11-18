@@ -8,5 +8,6 @@ class Pacman{
     draw(){
         ctxt.fillStyle = 'grey'
         fillrectCentered(this.pos)
+        pacmananimation.draw(ctxt,this.pos,tilesize)
     }
 }

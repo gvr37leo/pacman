@@ -68,6 +68,7 @@ document.addEventListener('keydown',e => {
         pacman.prefferedDir.x = 1
     }
 })
+var pacmananimation:AtlasAnimation
 loadImages([
 '/levels/level1.png',//0
 '/levels/boxcorner.png',
@@ -81,7 +82,9 @@ loadImages([
 '/levels/ghostwallcorner.png',//9
 '/levels/ghostwallend.png',
 '/levels/ghostdoor.png',
+'/levels/pacman.png',//12
 ]).then(images => {
+    pacmananimation = new AtlasAnimation(disectSimpleImageRow(3,new Vector(13,13)),Sprite.fromImage(images[12]) ,new Vector(13,13))
     board = convertImageData2board(convertImages2Imagedata(images.slice(0,1))[0])
     ruleTile.tilegrid = createNDimArray([board.length,board[0].length],v => {
         switch (board[v.x][v.y]) {
@@ -115,7 +118,7 @@ loadImages([
         [ 2,-1, 1],
         [ 2, 1,-2],
     ]))
-    ruleTile.rules.push(new RuleTileRule(new Sprite(images[4],-1,false,false),[//filled
+    ruleTile.rules.push(new RuleTileRule(new Sprite(ImageView.fromImage(images[4]),-1,false,false),[//filled
         [ 1, 1, 1],
         [ 1,-1, 1],
         [ 1, 1, 1],
@@ -157,11 +160,11 @@ loadImages([
     ]))
 
     spritegrid = ruleTile.genSpriteGrid()
-    spriteBox(new Sprite(images[2],0.5,false,false),new Sprite(images[9],0,false,false),new Vector(10,15),new Vector(7,4))
-    spritegrid[15][13] = new Sprite(images[11],0)
-    spritegrid[15][14] = new Sprite(images[11],0)
-    spritegrid[15][12] = new Sprite(images[10],0,true)
-    spritegrid[15][15] = new Sprite(images[10],0)
+    spriteBox(Sprite.fromImage(images[2],0.5),Sprite.fromImage(images[9]),new Vector(10,15),new Vector(7,4))
+    spritegrid[15][13] = Sprite.fromImage(images[11])
+    spritegrid[15][14] = Sprite.fromImage(images[11])
+    spritegrid[15][12] = Sprite.fromImage(images[10],0,true)
+    spritegrid[15][15] = Sprite.fromImage(images[10])
 
     amountofdots = countDots()
     drawboard(board)
@@ -299,7 +302,7 @@ function drawboard(board:Tiletype[][]){
     levelsize.loop2d(v => {
         var sprite = index2D(spritegrid,v)
         if(sprite){
-            sprite.draw(v.c().mul(tilesize))
+            sprite.draw(ctxt,v.c().mul(tilesize),tilesize)
         }
     })
 }

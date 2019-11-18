@@ -1,36 +1,4 @@
-class Sprite{
-    constructor(
-        public image:HTMLImageElement,
-        public rotations:number,
-        public xflipped:boolean = false,
-        public yflipped:boolean = false,){
 
-    }
-
-    c(){
-        return new Sprite(this.image,this.rotations,this.xflipped,this.yflipped)
-    }
-
-    rot(rot:number){
-        this.rotations += rot
-        return this
-    }
-
-    draw(pos:Vector){
-        var center = pos.c().add(tilesize.c().scale(0.5))
-        ctxt.save()
-        var xflip = this.xflipped ? -1 : 1
-        var yflip = this.yflipped ? -1 : 1
-
-        ctxt.translate(center.x,center.y)
-        ctxt.rotate(this.rotations * TAU)
-        ctxt.scale(xflip,yflip)
-        ctxt.translate(-center.x,-center.y)
-        
-        ctxt.drawImage(this.image,pos.x ,pos.y,tilesize.x,tilesize.y)
-        ctxt.restore()
-    }
-}
 
 // https://www.youtube.com/watch?v=Ky0sV9pua-E
 class RuleTileRule{
@@ -118,7 +86,7 @@ function createRotatedSprites(image:HTMLImageElement,grid:number[][],xflipped = 
     for(var i = 0; i < 4; i++){
         var rotatedcopy = rotateMatrix(copy2dArray(grid),i)
         
-        sprites.push(new RuleTileRule(new Sprite(image,i * 0.25,xflipped,yflipped),rotatedcopy))
+        sprites.push(new RuleTileRule(new Sprite(ImageView.fromImage(image),i * 0.25,xflipped,yflipped),rotatedcopy))
     }
     return sprites
 }

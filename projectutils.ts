@@ -120,3 +120,5 @@ var up = new Vector(0,-1)
 var right = new Vector(1,0)
 var down = new Vector(0,1)
 var left = new Vector(-1,0)
+
+type Ctx = CanvasRenderingContext2D
