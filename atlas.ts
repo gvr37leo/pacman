@@ -79,7 +79,7 @@ class AtlasAnimation{
 
     constructor(
         public positions:Vector[],
-        public image:Sprite,
+        public sprite:Sprite,
         public size:Vector,){
             
         this.anim = new Anim()
@@ -88,14 +88,14 @@ class AtlasAnimation{
         this.anim.end = 1
         this.anim.duration = 1000
         this.anim.animType = AnimType.repeat
+        this.sprite.imageView.ssize = this.size
     }
 
     draw(ctxt:CanvasRenderingContext2D,pos:Vector,size:Vector){
         if(this.positions.length > 0){
             var i = Math.min(Math.floor(this.anim.get() * this.positions.length), this.positions.length - 1) 
-            this.image.imageView.spos = this.positions[i]
-            this.image.imageView.ssize = this.size
-            this.image.draw(ctxt,pos,size)
+            this.sprite.imageView.spos = this.positions[i]
+            this.sprite.draw(ctxt,pos,size)
         }
     }
 }
