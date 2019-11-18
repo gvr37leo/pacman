@@ -11,8 +11,10 @@ class ImageView{
 
 class AtlasAnimation{
     anim:Anim
-    imageviews:ImageView[]
-    
+    image:HTMLImageElement
+    size:Vector
+    pos:Vector
+
     constructor(){
 
     }
