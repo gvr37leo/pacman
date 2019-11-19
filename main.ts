@@ -84,7 +84,9 @@ loadImages([
 '/levels/ghostdoor.png',
 '/levels/pacman.png',//12
 ]).then(images => {
-    pacmananimation = new AtlasAnimation(disectSimpleImageRow(3,new Vector(13,13)),Sprite.fromImage(images[12]) ,new Vector(13,13))
+    pacmananimation = new AtlasAnimation(disectSimpleImageRow(4,new Vector(26,26)),Sprite.fromImage(images[12]) ,new Vector(26,26))
+    pacmananimation.anim.animType = AnimType.repeat
+    pacmananimation.anim.duration = 200
     board = convertImageData2board(convertImages2Imagedata(images.slice(0,1))[0])
     ruleTile.tilegrid = createNDimArray([board.length,board[0].length],v => {
         switch (board[v.x][v.y]) {
@@ -167,7 +169,6 @@ loadImages([
     spritegrid[15][15] = Sprite.fromImage(images[10])
 
     amountofdots = countDots()
-    drawboard(board)
  
     scattermodedelayon()
 
@@ -229,9 +230,19 @@ loadImages([
             score += 100
         }else if(currenttile == Tiletype.powerup){
             board[pacmanroundpos.y][pacmanroundpos.x] = Tiletype.blank
-            ghosts.forEach(g => g.isFleeing = true)
+            ghosts.forEach(g => {
+                if(g.state == GhostState.normal){
+                    g.state = GhostState.fleeing;
+                    g.speed = 3
+                }
+            })
             setTimeout(() => {
-                ghosts.forEach(g => g.isFleeing = false)
+                ghosts.forEach(g => {
+                    if(g.state == GhostState.fleeing){
+                        g.state = GhostState.normal;
+                        g.speed = 6
+                    }
+                })
             },12000)
             score += 50
         }
@@ -268,6 +279,16 @@ loadImages([
         }
         //end ghosts
 
+        for(var ghost of ghosts){
+            if(vectorequal(floor(ghost.pos.c()),floor(pacman.pos.c()))){
+                if(ghost.state == GhostState.fleeing){
+                    ghost.state = GhostState.eaten
+                }else if(ghost.state == GhostState.normal){
+                    //pacman dead
+                }
+            }
+        }
+
         ctxt.clearRect(0,0,screensize.x,screensize.y)
         drawboard(board)    
         pacman.draw()
@@ -301,10 +322,32 @@ function getMovePossibilities(pos:Vector){
 function drawboard(board:Tiletype[][]){
     levelsize.loop2d(v => {
         var sprite = index2D(spritegrid,v)
-        if(sprite){
-            sprite.draw(ctxt,v.c().mul(tilesize),tilesize)
+        var abspos = v.c().mul(tilesize)
+        if(sprite){//wall and highground should have sprites
+            sprite.draw(ctxt,abspos,tilesize)
+        }else{
+            var tiletype = index2D(board,v)
+            ctxt.fillStyle = 'black'
+            fillrect(v)
+            if(tiletype == Tiletype.blank){
+                //nothing
+            }else if(tiletype == Tiletype.dot){
+                ctxt.fillStyle = 'yellow'
+                drawdot(v,new Vector(4,4))
+            }else if(tiletype == Tiletype.fruit){
+                ctxt.fillStyle = 'red'
+                drawdot(v,new Vector(6,6))
+            }else if(tiletype == Tiletype.powerup){
+                ctxt.fillStyle = 'blue'
+                drawdot(v,new Vector(6,6))
+            }
+            
         }
     })
+}
+
+function drawdot(v:Vector,size:Vector){
+    filrect( v.c().mul(tilesize).add(tilesize.c().scale(0.5)).sub(size.c().scale(0.5)) ,size)
 }
 
 function vecToTileCenter(v:Vector){

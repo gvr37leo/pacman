@@ -15,6 +15,6 @@ class Pacman{
         }else if(vectorequal(this.dir,up)){
             pacmananimation.sprite.rotations = 0.75
         }
-        pacmananimation.draw(ctxt,this.pos.c().sub(pacmananimation.size.c().scale(0.5)),tilesize)
+        pacmananimation.draw(ctxt,floor(this.pos.c().mul(tilesize).sub(tilesize.c().scale(0.5))),tilesize)
     }
 }

@@ -51,9 +51,13 @@ function fillrect(v:Vector){
     ctxt.fillRect(v.x * tilesize.x,v.y * tilesize.y,tilesize.x,tilesize.y)
 }
 
-function fillrectCentered(v:Vector){
+function fillrectCenteredGrid(v:Vector){
     var halfsize = tilesize.c().scale(0.5)
     ctxt.fillRect(v.x * tilesize.x - halfsize.x,v.y * tilesize.y - halfsize.y,tilesize.x,tilesize.y)
+}
+
+function filrect(v:Vector,size:Vector){
+    ctxt.fillRect(v.x,v.y,size.x,size.y)
 }
 
 function round(v:Vector){
