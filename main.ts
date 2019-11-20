@@ -192,7 +192,7 @@ loadImages([
     var temp = [0,0,0,0]
     var asprite = new AdvancedSprite(images[13], (rel,abs,out) => {
         sampler.sample(rel,out)
-        HSVtoRGB(mod(1 * abs.x * 0.03,1),1,1,temp)
+        HSVtoRGB(mod(1 * (abs.x + abs.y) * 0.01,1),1,1,out)
         // alphablend(temp,out)
     })
     gfx.load()
