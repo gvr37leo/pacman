@@ -99,3 +99,45 @@ class AtlasAnimation{
         }
     }
 }
+
+class TextureSampler{
+    imagedata: ImageData
+    constructor(image:HTMLImageElement){
+        this.imagedata = convertImages2Imagedata([image])[0]
+    }
+
+    sample(p:Vector,out:number[]){
+        var i = this.index(p.x,p.y)
+        out[0] = this.imagedata.data[i + 0]
+        out[1] = this.imagedata.data[i + 1]
+        out[2] = this.imagedata.data[i + 2]
+        out[3] = this.imagedata.data[i + 3]
+    }
+
+    index(x,y){
+        return (this.imagedata.width * y + x) * 4
+    }
+}
+
+function alphablend(a:number[],dst:number[]){
+    var x = a[3] / 255
+    dst[0] = lerp(dst[0],a[0],x)
+    dst[1] = lerp(dst[1],a[1],x)
+    dst[2] = lerp(dst[2],a[2],x)
+}
+
+class AdvancedSprite{
+    constructor(public image:HTMLImageElement,public shader:(relpos:Vector,abspos:Vector,out:number[]) => void){
+
+    }
+    
+    draw(gfx:Graphics,pos:Vector){
+        var pixelbuffer = [0,0,0,0]
+        var abs = zero.c()
+        new Vector(this.image.width,this.image.height).loop2d(rel => {
+            abs.overwrite(rel).add(pos)
+            this.shader(rel,abs,pixelbuffer)
+            gfx.putPixel(abs.x,abs.y,pixelbuffer)
+        })
+    }
+}

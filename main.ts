@@ -7,6 +7,7 @@
 /// <reference path="ruleTile.ts" />
 /// <reference path="ruleTile.ts" />
 /// <reference path="atlas.ts" />
+/// <reference path="node_modules/graphicsx/graphics.ts" />
 
 
 //sound
@@ -33,6 +34,7 @@ var colors = ['black','white','blue','red','yellow','pink']
 var colorsrgb = [[0,0,0],[255,255,255],[0,38,255],[255,0,0],[255,216,0],[255, 61, 229]]
 enum Tiletype{wall,blank,powerup,fruit,dot,highround}
 
+
 var score = 0
 var highscore = 0
 var dotseaten = 0
@@ -54,7 +56,7 @@ var onPacmanDead = new EventSystem<number>()
 
 var ruleTile = new RuleTile(1,-1,-2,2,0)
 var spritegrid:Sprite[][]
-
+var gfx = new Graphics(ctxt)
 document.addEventListener('keydown',e => {
     pacman.prefferedDir.x = 0
     pacman.prefferedDir.y = 0
@@ -83,6 +85,7 @@ loadImages([
 '/levels/ghostwallend.png',
 '/levels/ghostdoor.png',
 '/levels/pacman.png',//12
+'/levels/test.png',//13
 ]).then(images => {
     pacmananimation = new AtlasAnimation(disectSimpleImageRow(4,new Vector(26,26)),Sprite.fromImage(images[12]) ,new Vector(26,26))
     pacmananimation.anim.animType = AnimType.repeat
@@ -185,7 +188,17 @@ loadImages([
             scattermodedelayon()
         },5000)
     }
-    
+    var sampler = new TextureSampler(images[13])
+    var temp = [0,0,0,0]
+    var asprite = new AdvancedSprite(images[13], (rel,abs,out) => {
+        sampler.sample(rel,out)
+        HSVtoRGB(mod(1 * abs.x * 0.03,1),1,1,temp)
+        // alphablend(temp,out)
+    })
+    gfx.load()
+    asprite.draw(gfx, new Vector(10,10))
+    gfx.flush()
+
     var loopfunc = (dt) => {
         dt /= 1000
         dt = clamp(dt,0,1/100)
@@ -233,14 +246,12 @@ loadImages([
             ghosts.forEach(g => {
                 if(g.state == GhostState.normal){
                     g.state = GhostState.fleeing;
-                    g.speed = 3
                 }
             })
             setTimeout(() => {
                 ghosts.forEach(g => {
                     if(g.state == GhostState.fleeing){
                         g.state = GhostState.normal;
-                        g.speed = 6
                     }
                 })
             },12000)
@@ -251,7 +262,7 @@ loadImages([
 
         //begin ghosts
         for(var ghost of ghosts){
-            var travel = ghost.dir.c().scale(ghost.speed * dt)
+            var travel = ghost.dir.c().scale(ghost.getspeed() * dt)
             if(isGoingToCrossTileCenterOrOnCenter(ghost.pos,travel)){
                 var posibillities = getMovePossibilities(floor(ghost.pos.c()))
                 var reversedir = ghost.dir.c().scale(-1).add(new Vector(1,1))
@@ -264,7 +275,7 @@ loadImages([
                 var olddir = ghost.dir.c()
                 var newdir = dirvecs[bestindex]
                 ghost.dir.overwrite(newdir)
-                travel = ghost.dir.c().scale(ghost.speed * dt)
+                travel = ghost.dir.c().scale(ghost.getspeed() * dt)
                 modifyTravelForCorners(ghost.pos,travel,olddir,newdir)
             }
             
@@ -295,7 +306,7 @@ loadImages([
         ghosts.forEach(g => g.draw())
     }
 
-    loop(loopfunc)
+    // loop(loopfunc)
 })
 
 enum Direction{north,east,south,west}

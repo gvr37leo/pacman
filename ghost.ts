@@ -1,12 +1,21 @@
 enum GhostState{normal,eaten,fleeing}
 
 class Ghost{
-    speed = 6
     state:GhostState = GhostState.normal
     dir:Vector = new Vector(1,0)
 
     constructor(public pos:Vector, public color:string, public scattertile:Vector, public target:() => Vector){
 
+    }
+
+    getspeed(){
+        if(this.state == GhostState.eaten){
+            return 12
+        }else if(this.state == GhostState.fleeing){
+            return 3
+        }else if(this.state == GhostState.normal){
+            return 6
+        }
     }
 
     getTarget(){
