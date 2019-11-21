@@ -67,17 +67,41 @@ document.addEventListener('keydown',e => {
         pacman.prefferedDir.x = 1
     }
 })
+
+
+// var temp = [0,0,0,0]
+// var asprite = new AdvancedSprite(images[13], (rel,abs,out) => {
+//     sampler.sample(rel,out)
+//     colorReplace(out,[255,255,255],[0,255,0],out)
+//     // HSVtoRGB(mod(1 * (abs.x + abs.y) * 0.01,1),1,1,out)
+//     // alphablend(temp,out)
+// })
+
 var images:any[];
 function reset(){
+
     board = convertImageData2board(convertImages2Imagedata(images.slice(0,1))[0])
-    pacman = new Pacman(new Vector(6.5,15.5),new Vector(1,0))
-    blinky = new Ghost(new Vector(12.5,14.5),'red',new Vector(levelsize.x - 3,0),() => {return pacman.pos.c()})
-    pinky = new Ghost(new Vector(13.5,14.5),'pink',new Vector(2,0),() => {return pacman.pos.c().add(pacman.dir.c().scale(4))})
-    inky = new Ghost(new Vector(14.5,14.5),'cyan',new Vector(levelsize.x - 1,levelsize.y),() => {
+    pacman = new Pacman(new Vector(13.5,26.5),new Vector(1,0))
+    var sampler = new TextureSampler(images[14])
+    blinky = new Ghost(new Vector(12.5,14.5),new AdvancedSprite(images[14],(rel,abs,out) => {
+        sampler.sample(rel,out)
+        colorReplace(out,[255,0,0],[255, 0, 0],out)
+    }),new Vector(levelsize.x - 3,0),() => {return pacman.pos.c()})
+    pinky = new Ghost(new Vector(13.5,14.5),new AdvancedSprite(images[14],(rel,abs,out) => {
+        sampler.sample(rel,out)
+        colorReplace(out,[255,0,0],[255, 156, 206],out)
+    }),new Vector(2,0),() => {return pacman.pos.c().add(pacman.dir.c().scale(4))})
+    inky = new Ghost(new Vector(14.5,14.5),new AdvancedSprite(images[14],(rel,abs,out) => {
+        sampler.sample(rel,out)
+        colorReplace(out,[255,0,0],[49,255,255],out)
+    }),new Vector(levelsize.x - 1,levelsize.y),() => {
         var ahead = pacman.pos.c().add(pacman.dir.c().scale(2))
         return blinky.pos.c().add(blinky.pos.to(ahead).scale(2)) 
     })
-    clyde = new Ghost(new Vector(15.5,14.5),'orange',new Vector(0,levelsize.y),() => {return clyde.pos.to(pacman.pos).length() > 8 ? pacman.pos.c() : clyde.scattertile})
+    clyde = new Ghost(new Vector(15.5,14.5),new AdvancedSprite(images[14],(rel,abs,out) => {
+        sampler.sample(rel,out)
+        colorReplace(out,[255,0,0],[255,206,49],out)
+    }),new Vector(0,levelsize.y),() => {return clyde.pos.to(pacman.pos).length() > 8 ? pacman.pos.c() : clyde.scattertile})
     ghosts = [blinky,pinky,inky,clyde]
     score = 0
 }
@@ -97,7 +121,7 @@ loadImages([
 '/levels/ghostdoor.png',
 '/levels/pacman.png',//12
 '/levels/test.png',//13
-'/levels/ghostanim.png'
+'/levels/ghost.png'
 ]).then(pimages => {
     images = pimages
     pacmananimation = new AtlasAnimation(disectSimpleImageRow(4,new Vector(26,26)),Sprite.fromImage(images[12]) ,new Vector(26,26))
@@ -201,17 +225,8 @@ loadImages([
             scattermodedelayon()
         },5000)
     }
-    // var sampler = new TextureSampler(images[13])
-    // var temp = [0,0,0,0]
-    // var asprite = new AdvancedSprite(images[13], (rel,abs,out) => {
-    //     sampler.sample(rel,out)
-    //     colorReplace(out,[255,255,255],[0,255,0],out)
-    //     // HSVtoRGB(mod(1 * (abs.x + abs.y) * 0.01,1),1,1,out)
-    //     // alphablend(temp,out)
-    // })
-    // gfx.load()
-    // asprite.draw(gfx, new Vector(10,10))
-    // gfx.flush()
+
+
 
     var loopfunc = (dt) => {
         dt /= 1000
@@ -320,7 +335,11 @@ loadImages([
         ctxt.clearRect(0,0,screensize.x,screensize.y)
         drawboard(board)    
         pacman.draw()
+
+        gfx.load()
         ghosts.forEach(g => g.draw())
+        gfx.putPixel(0,0,[255,255,255,255])
+        gfx.flush()
     }
 
     loop(loopfunc)

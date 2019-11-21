@@ -1,11 +1,11 @@
 enum GhostState{normal,eaten,fleeing}
 
 class Ghost{
-    sprite:AdvancedSprite
+    
     state:GhostState = GhostState.normal
     dir:Vector = new Vector(1,0)
 
-    constructor(public pos:Vector, public color:string, public scattertile:Vector, public target:() => Vector){
+    constructor(public pos:Vector, public sprite:AdvancedSprite, public scattertile:Vector, public target:() => Vector){
 
     }
 
@@ -35,15 +35,8 @@ class Ghost{
     }
 
     draw(){
-        ctxt.fillStyle = this.color
-        if(this.state == GhostState.fleeing){
-            ctxt.fillStyle = 'blue'
-        }else if(this.state == GhostState.eaten){
-            ctxt.fillStyle = 'grey'
-        }
-        fillrectCenteredGrid(this.pos)
-        if(false){
-            this.sprite.draw(gfx,this.pos)
-        }
+        this.sprite.draw(gfx,floor(this.pos.c().mul(tilesize).sub(tilesize.c().scale(0.5))))
+        // this.sprite.draw(gfx,zero)
+
     }
 }
