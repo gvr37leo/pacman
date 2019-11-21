@@ -20,7 +20,7 @@ class Ghost{
 
     getTarget(){
         if(this.state == GhostState.eaten){
-            return new Vector(13,16)
+            return ghostretreatpoint.c()
         }
         else if(this.state == GhostState.fleeing){
             return [new Vector(0,0), new Vector(levelsize.x,levelsize.y), new Vector(levelsize.x,0),new Vector(0,levelsize.y)][Math.floor(random(0,4))]

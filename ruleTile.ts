@@ -79,7 +79,6 @@ class RuleTile{
 //wall * 4
 //edgewall * 4
 //inner * 1
-var images:HTMLImageElement[] = []
 function createRotatedSprites(image:HTMLImageElement,grid:number[][],xflipped = false, yflipped = false){
     var sprites:RuleTileRule[] = []
 
