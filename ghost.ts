@@ -1,6 +1,7 @@
 enum GhostState{normal,eaten,fleeing}
 
 class Ghost{
+    sprite:AdvancedSprite
     state:GhostState = GhostState.normal
     dir:Vector = new Vector(1,0)
 
@@ -41,5 +42,8 @@ class Ghost{
             ctxt.fillStyle = 'grey'
         }
         fillrectCenteredGrid(this.pos)
+        if(false){
+            this.sprite.draw(gfx,this.pos)
+        }
     }
 }
