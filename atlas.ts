@@ -126,6 +126,12 @@ function alphablend(a:number[],dst:number[]){
     dst[2] = lerp(dst[2],a[2],x)
 }
 
+function colorReplace(input:number[],fromcolor:number[],tocolor:number[],output:number[]){
+    if(arrayequalL(input,fromcolor,3)){
+        arrayoverwrite(tocolor,output)
+    }
+}
+
 class AdvancedSprite{
     constructor(public image:HTMLImageElement,public shader:(relpos:Vector,abspos:Vector,out:number[]) => void){
 

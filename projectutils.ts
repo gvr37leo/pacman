@@ -40,7 +40,22 @@ function index(x,y,width){
 }
 
 function arrayequal(a:any[],b:any[]){
-    return !a.some((v,i) => a[i] != b[i])
+    return arrayequalL(a,b,a.length)
+}
+
+function arrayequalL(a:any[],b:any[],length:number){
+    for(var i = 0; i < length; i++){
+        if(a[i] != b[i]){
+            return false
+        }
+    }
+    return true
+}
+
+function arrayoverwrite(src:any[],dst:any[]){
+    for(var i = 0; i < src.length; i++){
+        dst[i] = src[i]
+    }
 }
 
 function vectorequal(a:Vector,b:Vector){

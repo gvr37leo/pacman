@@ -7,7 +7,7 @@
 /// <reference path="ruleTile.ts" />
 /// <reference path="ruleTile.ts" />
 /// <reference path="atlas.ts" />
-/// <reference path="node_modules/graphicsx/graphics.ts" />
+/// <reference path="graphics.ts" />
 
 
 //sound
@@ -86,6 +86,7 @@ loadImages([
 '/levels/ghostdoor.png',
 '/levels/pacman.png',//12
 '/levels/test.png',//13
+'/levels/ghostanim.png'
 ]).then(images => {
     pacmananimation = new AtlasAnimation(disectSimpleImageRow(4,new Vector(26,26)),Sprite.fromImage(images[12]) ,new Vector(26,26))
     pacmananimation.anim.animType = AnimType.repeat
@@ -192,7 +193,8 @@ loadImages([
     var temp = [0,0,0,0]
     var asprite = new AdvancedSprite(images[13], (rel,abs,out) => {
         sampler.sample(rel,out)
-        HSVtoRGB(mod(1 * (abs.x + abs.y) * 0.01,1),1,1,out)
+        colorReplace(out,[255,255,255],[0,255,0],out)
+        // HSVtoRGB(mod(1 * (abs.x + abs.y) * 0.01,1),1,1,out)
         // alphablend(temp,out)
     })
     gfx.load()
