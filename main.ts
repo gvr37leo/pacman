@@ -82,25 +82,27 @@ function reset(){
 
     board = convertImageData2board(convertImages2Imagedata(images.slice(0,1))[0])
     pacman = new Pacman(new Vector(13.5,26.5),new Vector(1,0))
+
+
     var sampler = new TextureSampler(images[14])
-    blinky = new Ghost(new Vector(12.5,14.5),new AdvancedSprite(images[14],(rel,abs,out) => {
+    blinky = new Ghost(new Vector(12.5,14.5),[255, 0, 0],new AdvancedSprite(images[14],(rel,abs,out) => {
         sampler.sample(rel,out)
-        colorReplace(out,[255,0,0],[255, 0, 0],out)
+        colorReplace(out,[255,0,0],blinky.color,out)
     }),new Vector(levelsize.x - 3,0),() => {return pacman.pos.c()})
-    pinky = new Ghost(new Vector(13.5,14.5),new AdvancedSprite(images[14],(rel,abs,out) => {
+    pinky = new Ghost(new Vector(13.5,14.5),[255, 156, 206],new AdvancedSprite(images[14],(rel,abs,out) => {
         sampler.sample(rel,out)
-        colorReplace(out,[255,0,0],[255, 156, 206],out)
+        colorReplace(out,[255,0,0],pinky.color,out)
     }),new Vector(2,0),() => {return pacman.pos.c().add(pacman.dir.c().scale(4))})
-    inky = new Ghost(new Vector(14.5,14.5),new AdvancedSprite(images[14],(rel,abs,out) => {
+    inky = new Ghost(new Vector(14.5,14.5),[49,255,255],new AdvancedSprite(images[14],(rel,abs,out) => {
         sampler.sample(rel,out)
-        colorReplace(out,[255,0,0],[49,255,255],out)
+        colorReplace(out,[255,0,0],inky.color,out)
     }),new Vector(levelsize.x - 1,levelsize.y),() => {
         var ahead = pacman.pos.c().add(pacman.dir.c().scale(2))
         return blinky.pos.c().add(blinky.pos.to(ahead).scale(2)) 
     })
-    clyde = new Ghost(new Vector(15.5,14.5),new AdvancedSprite(images[14],(rel,abs,out) => {
+    clyde = new Ghost(new Vector(15.5,14.5),[255,206,49],new AdvancedSprite(images[14],(rel,abs,out) => {
         sampler.sample(rel,out)
-        colorReplace(out,[255,0,0],[255,206,49],out)
+        colorReplace(out,[255,0,0],clyde.color,out)
     }),new Vector(0,levelsize.y),() => {return clyde.pos.to(pacman.pos).length() > 8 ? pacman.pos.c() : clyde.scattertile})
     ghosts = [blinky,pinky,inky,clyde]
     score = 0

@@ -4,9 +4,10 @@ class Ghost{
     
     state:GhostState = GhostState.normal
     dir:Vector = new Vector(1,0)
+    originalColor: number[]
 
-    constructor(public pos:Vector, public sprite:AdvancedSprite, public scattertile:Vector, public target:() => Vector){
-
+    constructor(public pos:Vector,public color:number[], public sprite:AdvancedSprite, public scattertile:Vector, public target:() => Vector){
+        this.originalColor = [...color]
     }
 
     getspeed(){
@@ -35,8 +36,13 @@ class Ghost{
     }
 
     draw(){
+        if(this.state == GhostState.fleeing){
+            arrayoverwrite([0,0,255],this.color)
+        }else if(this.state == GhostState.normal){
+            arrayoverwrite(this.originalColor,this.color)
+        }else if(this.state == GhostState.eaten){
+            arrayoverwrite([0,0,0,0],this.color)
+        }
         this.sprite.draw(gfx,floor(this.pos.c().mul(tilesize).sub(tilesize.c().scale(0.5))))
-        // this.sprite.draw(gfx,zero)
-
     }
 }
