@@ -45,12 +45,16 @@ var pinky:Ghost
 var inky:Ghost
 var clyde:Ghost
 var ghosts:Ghost[]
-var ghostretreatpoint = new Vector(13,16)
+var ghostretreatpoint = new Vector(13,14)
 
 var pacman:Pacman
 var board:Tiletype[][];
 var onPacmanDead = new EventSystem<number>()
-
+var sound = new Howl({
+    src: ['res/ghostsound.mp3'],
+    loop:true,
+});
+sound.play()
 var ruleTile = new RuleTile(1,-1,-2,2,0)
 var spritegrid:Sprite[][]
 var gfx = new Graphics(ctxt)
@@ -109,21 +113,21 @@ function reset(){
 }
 var pacmananimation:AtlasAnimation
 loadImages([
-'/levels/level1.png',//0
-'/levels/boxcorner.png',
-'/levels/closedwall.png',
-'/levels/corner.png',
-'/levels/filled.png',
-'/levels/junction.png',//5
-'/levels/openwall.png',
-'/levels/boxjunction.png',
-'/levels/innerboxcorner.png',
-'/levels/ghostwallcorner.png',//9
-'/levels/ghostwallend.png',
-'/levels/ghostdoor.png',
-'/levels/pacman.png',//12
-'/levels/test.png',//13
-'/levels/ghost.png'
+'/res/level1.png',//0
+'/res/boxcorner.png',
+'/res/closedwall.png',
+'/res/corner.png',
+'/res/filled.png',
+'/res/junction.png',//5
+'/res/openwall.png',
+'/res/boxjunction.png',
+'/res/innerboxcorner.png',
+'/res/ghostwallcorner.png',//9
+'/res/ghostwallend.png',
+'/res/ghostdoor.png',
+'/res/pacman.png',//12
+'/res/test.png',//13
+'/res/ghost.png'
 ]).then(pimages => {
     images = pimages
     pacmananimation = new AtlasAnimation(disectSimpleImageRow(4,new Vector(26,26)),Sprite.fromImage(images[12]) ,new Vector(26,26))

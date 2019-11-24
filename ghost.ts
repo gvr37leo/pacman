@@ -41,7 +41,7 @@ class Ghost{
         }else if(this.state == GhostState.normal){
             arrayoverwrite(this.originalColor,this.color)
         }else if(this.state == GhostState.eaten){
-            arrayoverwrite([0,0,0,0],this.color)
+            arrayoverwrite([0,0,0],this.color)
         }
         this.sprite.draw(gfx,floor(this.pos.c().mul(tilesize).sub(tilesize.c().scale(0.5))))
     }
