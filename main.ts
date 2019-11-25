@@ -51,18 +51,18 @@ var pacman:Pacman
 var board:Tiletype[][];
 var onPacmanDead = new EventSystem<number>()
 var ghostsound = new Howl({
-    src: ['res/ghostsound.mp3'],
+    src: ['./res/ghostsound.mp3'],
     loop:true,
     volume:0.25,
 });
 var ghostfleeing = new Howl({
-    src: ['res/ghostfleeing.mp3'],
+    src: ['./res/ghostfleeing.mp3'],
     loop:true,
     volume:0.25,
     mute:true,
 });
 var pacmaneat = new Howl({
-    src: ['res/pacmaneat.mp3'],
+    src: ['./res/pacmaneat.mp3'],
     loop:true,
     mute:true,
 });
@@ -128,21 +128,21 @@ function reset(){
 }
 var pacmananimation:AtlasAnimation
 loadImages([
-'/res/level1.png',//0
-'/res/boxcorner.png',
-'/res/closedwall.png',
-'/res/corner.png',
-'/res/filled.png',
-'/res/junction.png',//5
-'/res/openwall.png',
-'/res/boxjunction.png',
-'/res/innerboxcorner.png',
-'/res/ghostwallcorner.png',//9
-'/res/ghostwallend.png',
-'/res/ghostdoor.png',
-'/res/pacman.png',//12
-'/res/test.png',//13
-'/res/ghost.png'
+'./res/level1.png',//0
+'./res/boxcorner.png',
+'./res/closedwall.png',
+'./res/corner.png',
+'./res/filled.png',
+'./res/junction.png',//5
+'./res/openwall.png',
+'./res/boxjunction.png',
+'./res/innerboxcorner.png',
+'./res/ghostwallcorner.png',//9
+'./res/ghostwallend.png',
+'./res/ghostdoor.png',
+'./res/pacman.png',//12
+'./res/test.png',//13
+'./res/ghost.png'
 ]).then(pimages => {
     images = pimages
     pacmananimation = new AtlasAnimation(disectSimpleImageRow(4,new Vector(26,26)),Sprite.fromImage(images[12]) ,new Vector(26,26))
