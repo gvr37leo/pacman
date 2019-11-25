@@ -50,11 +50,19 @@ var ghostretreatpoint = new Vector(13,14)
 var pacman:Pacman
 var board:Tiletype[][];
 var onPacmanDead = new EventSystem<number>()
-var sound = new Howl({
+var ghostsound = new Howl({
     src: ['res/ghostsound.mp3'],
     loop:true,
 });
-sound.play()
+var ghostfleeing = new Howl({
+    src: ['res/ghostfleeing.mp3'],
+    loop:true,
+});
+var pacmaneat = new Howl({
+    src: ['res/pacmaneat.mp3'],
+    loop:true,
+});
+ghostsound.play()
 var ruleTile = new RuleTile(1,-1,-2,2,0)
 var spritegrid:Sprite[][]
 var gfx = new Graphics(ctxt)
