@@ -53,16 +53,23 @@ var onPacmanDead = new EventSystem<number>()
 var ghostsound = new Howl({
     src: ['res/ghostsound.mp3'],
     loop:true,
+    volume:0.25,
 });
 var ghostfleeing = new Howl({
     src: ['res/ghostfleeing.mp3'],
     loop:true,
+    volume:0.25,
+    mute:true,
 });
 var pacmaneat = new Howl({
     src: ['res/pacmaneat.mp3'],
     loop:true,
+    mute:true,
 });
+pacmaneat.play()
 ghostsound.play()
+ghostfleeing.play()
+var timeouthandle = -1
 var ruleTile = new RuleTile(1,-1,-2,2,0)
 var spritegrid:Sprite[][]
 var gfx = new Graphics(ctxt)
@@ -278,9 +285,16 @@ loadImages([
         var pacmanroundpos = floor(pacman.pos.c())
         var currenttile = board[pacmanroundpos.y][pacmanroundpos.x]
 
+        
+        
         if(currenttile == Tiletype.dot){
             board[pacmanroundpos.y][pacmanroundpos.x] = Tiletype.blank
             score += 10
+            pacmaneat.mute(false)
+            clearTimeout(timeouthandle)
+            timeouthandle = setTimeout(() => {
+                pacmaneat.mute(true)
+            },200)
         }else if(currenttile == Tiletype.fruit){
             board[pacmanroundpos.y][pacmanroundpos.x] = Tiletype.blank
             score += 100
@@ -291,7 +305,11 @@ loadImages([
                     g.state = GhostState.fleeing;
                 }
             })
+            ghostfleeing.mute(false)
+            ghostsound.mute(true)
             setTimeout(() => {
+                ghostfleeing.mute(true)
+                ghostsound.mute(false)
                 ghosts.forEach(g => {
                     if(g.state == GhostState.fleeing){
                         g.state = GhostState.normal;
